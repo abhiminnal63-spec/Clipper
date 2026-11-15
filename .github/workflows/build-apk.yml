@@ -143,14 +143,8 @@ jobs:
             exit 1
           fi
 
-          RAW_REPO="${GITHUB_REPOSITORY#*/}"
-          SAFE_REPO="$(printf '%s' "$RAW_REPO" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//')"
-          if [ -z "$SAFE_REPO" ]; then
-            SAFE_REPO="android-app"
-          fi
-
           ASSET_DIR="$(mktemp -d "${RUNNER_TEMP}/release-apk-XXXXXX")"
-          ASSET_NAME="${SAFE_REPO}-debug-build-${GITHUB_RUN_NUMBER}.apk"
+          ASSET_NAME="app-debug.apk"
           ASSET_PATH="${ASSET_DIR}/${ASSET_NAME}"
 
           cp "$EXPECTED_APK" "$ASSET_PATH"
@@ -177,7 +171,7 @@ jobs:
           gh --version
 
           ASSET_PATH="${{ steps.prepare_asset.outputs.asset_path }}"
-          if [ -z "$ASSET_PATH" ] || [ ! -f "$ASSET_PATH" ] || [ ! -s "$ASSET_PATH" ] || [[ "$ASSET_PATH" != *.apk ]]; then
+          if [ -z "$ASSET_PATH" ] || [ ! -f "$ASSET_PATH" ] || [ ! -s "$ASSET_PATH" ] || [[ "$ASSET_PATH" != *.apk ]] || [ "$(basename "$ASSET_PATH")" != "app-debug.apk" ]; then
             echo "::warning::Prepared release asset is missing or invalid: ${ASSET_PATH:-<empty>}"
             exit 1
           fi
@@ -210,36 +204,37 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ASSET_NAME="${{ steps.prepare_asset.outputs.asset_name }}"
           RELEASE_TAG="${{ steps.publish_release.outputs.release_tag }}"
           RELEASE_TITLE="${{ steps.publish_release.outputs.release_title }}"
+          DIRECT_APK_URL="https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/app-debug.apk"
 
           if [ "${{ steps.publish_release.outcome }}" = "success" ] && [ -n "$RELEASE_TAG" ]; then
             RELEASE_URL="$(gh release view "$RELEASE_TAG" --json url --jq '.url')"
             echo "Release Tag: ${RELEASE_TAG}"
             echo "Release Title: ${RELEASE_TITLE}"
-            echo "Release URL: ${RELEASE_URL}"
-            echo "APK Asset Filename: ${ASSET_NAME}"
+            echo "Release Page URL: ${RELEASE_URL}"
+            echo "APK Filename: app-debug.apk"
+            echo "DIRECT APK DOWNLOAD: ${DIRECT_APK_URL}"
 
             {
-              echo "### Debug APK Build & GitHub Release Published"
+              echo "### DIRECT APK DOWNLOAD"
               echo ""
+              echo "- **Direct APK URL**: ${DIRECT_APK_URL}"
+              echo "- **APK Filename**: \`app-debug.apk\`"
               echo "- **Release Title**: ${RELEASE_TITLE}"
               echo "- **Release Tag**: \`${RELEASE_TAG}\`"
-              echo "- **APK Asset**: \`${ASSET_NAME}\`"
               if [ -n "$RELEASE_URL" ]; then
                 echo "- **GitHub Release Page**: ${RELEASE_URL}"
               fi
               echo ""
-              echo "Download \`${ASSET_NAME}\` directly from the **Assets** section of the GitHub Release page."
-              echo "The normal GitHub Actions artifact (\`app-debug-apk\`) is also available as a backup."
+              echo "The normal GitHub Actions artifact (\`app-debug-apk\`) remains available as a backup."
             } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "::warning::GitHub Release publishing failed, but the debug APK build succeeded and the Actions artifact 'app-debug-apk' remains available."
             {
               echo "### Debug APK Build Succeeded (GitHub Release Publishing Failed)"
               echo ""
-              echo "> **Warning**: Automatic GitHub Release publishing failed, so no release URL was created."
+              echo "> **Warning**: GitHub Release publishing failed. The new APK is not available via the direct latest-release link."
               echo ""
               echo "- The debug APK build **succeeded**."
               echo "- Download the backup APK from the GitHub Actions workflow artifact named **\`app-debug-apk\`**."
