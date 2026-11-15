@@ -1,0 +1,79 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidClipProject(data, userId) {
+      return data.userId is string && data.userId == userId && data.userId.size() <= 128 &&
+             data.sourceType in ['youtube', 'local'] &&
+             data.videoId is string && data.videoId.size() >= 1 && data.videoId.size() <= 64 &&
+             data.sourceUrl is string && data.sourceUrl.size() <= 500 &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             data.channelName is string && data.channelName.size() <= 120 &&
+             data.thumbnailUrl is string && data.thumbnailUrl.size() <= 500 &&
+             data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 86400 &&
+             data.aspectRatio in ['9:16', '16:9', '1:1'] &&
+             data.status in ['preview', 'analyzed', 'clipped'] &&
+             data.strategyNotes is string && data.strategyNotes.size() <= 8000 &&
+             data.clips is list && data.clips.size() <= 10 &&
+             (data.clips.size() == 0 || data.clips[0] is map) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId}/projects/{projectId} {
+      allow list: if isSignedIn() && request.auth.uid == userId;
+
+      allow get: if isSignedIn() && request.auth.uid == userId && isValidId(projectId);
+
+      allow create: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidId(projectId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'sourceType', 'videoId', 'sourceUrl', 'title',
+                         'channelName', 'thumbnailUrl', 'durationSeconds', 'aspectRatio',
+                         'status', 'strategyNotes', 'clips', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'sourceType', 'videoId', 'sourceUrl', 'title',
+                         'channelName', 'thumbnailUrl', 'durationSeconds', 'aspectRatio',
+                         'status', 'strategyNotes', 'clips', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidClipProject(incoming(), userId);
+
+      allow update: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidId(projectId) &&
+                       isValidClipProject(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         incoming().diff(existing()).affectedKeys().hasOnly(['clips', 'status', 'updatedAt']) ||
+                         incoming().diff(existing()).affectedKeys().hasOnly(['strategyNotes', 'updatedAt']) ||
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'clips', 'status', 'strategyNotes', 'updatedAt'])
+                       );
+
+      allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(projectId);
+    }
+  }
+}

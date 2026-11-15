@@ -1,0 +1,6 @@
+{
+  "name": "Clipper",
+  "description": "AI YouTube Shorts Clipper with URL validation, official YouTube metadata retrieval, authorized local video clipping, Gemini video analysis, audio transcription, and cloud project sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

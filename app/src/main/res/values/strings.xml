@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">Clipper</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_clipper_logo">Clipper studio logo</string>
+    <string name="cd_studio_hero">Clipper vertical Shorts workspace preview</string>
+    <string name="cd_paste_url">Paste YouTube link from clipboard</string>
+    <string name="cd_clear_url">Clear YouTube URL</string>
+    <string name="cd_mic_transcribe">Transcribe voice prompt using microphone</string>
+    <string name="cd_sign_out">Sign out</string>
+    <string name="cd_delete_project">Delete project</string>
+    <string name="cd_video_thumbnail">Video preview thumbnail</string>
+
+    <!-- Auth Screen -->
+    <string name="auth_subtitle">Discover high-retention vertical Shorts moments from public YouTube metadata or trim your own local videos on device.</string>
+    <string name="auth_sign_in_google">Sign in with Google</string>
+    <string name="auth_signing_in">Signing in…</string>
+    <string name="auth_checking_session">Checking session…</string>
+    <string name="auth_feature_ai_title">Gemini 4 Video &amp; Deep Strategy</string>
+    <string name="auth_feature_ai_desc">Finds viral hooks and builds pacing scripts with high-thinking reasoning.</string>
+    <string name="auth_feature_voice_title">Voice-to-Prompt Transcription</string>
+    <string name="auth_feature_voice_desc">Dictate clip directions with your microphone via Gemini 3.5 Transcribe.</string>
+    <string name="auth_feature_local_title">Local-First Compliance</string>
+    <string name="auth_feature_local_desc">YouTube streams are never downloaded. Local files stay on your device.</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_studio">Studio</string>
+    <string name="nav_projects">Projects</string>
+
+    <!-- Home Screen -->
+    <string name="home_headline">Turn long videos into Shorts</string>
+    <string name="home_subhead">Paste a YouTube link to inspect public metadata, or select an authorized local video file for on-device clipping.</string>
+    <string name="url_input_label">YouTube URL</string>
+    <string name="url_input_placeholder">youtube.com/watch?v=…, youtu.be/…, or Shorts</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_find_clips">Find Clips</string>
+    <string name="action_finding_clips">Analyzing…</string>
+    <string name="local_upload_title">Authorized Local Video</string>
+    <string name="local_upload_subtitle">Select user-owned or licensed video files. Source media stays locally on your device.</string>
+    <string name="action_choose_local_video">Choose Local Video</string>
+    <string name="preview_section_title">Preview &amp; AI Clip Discovery</string>
+    <string name="preview_empty_title">Ready for your next Short</string>
+    <string name="preview_empty_body">Paste a YouTube URL or pick an authorized local video to inspect metadata and discover top vertical clips.</string>
+    <string name="recent_projects_title">Recent Projects</string>
+    <string name="recent_projects_empty">No saved projects yet. Analyze a video above to save your first Shorts project.</string>
+    <string name="youtube_compliance_note">Official YouTube Data API metadata only — audiovisual streams are never downloaded or extracted.</string>
+    <string name="local_compliance_note">Processed locally via Android MediaExtractor &amp; MediaMuxer — source file never leaves your device.</string>
+
+    <!-- Studio & AI -->
+    <string name="studio_title">Clip Studio</string>
+    <string name="studio_no_project">Select or analyze a video on Home to open it in Clip Studio.</string>
+    <string name="action_export_local_clip">Trim &amp; Export Clip (MP4)</string>
+    <string name="strategy_title">Deep Viral Strategy (High Thinking)</string>
+    <string name="strategy_hint">Ask Gemini 4 Carbon for hook scripts, pacing, or Shorts series strategy…</string>
+    <string name="action_ask_strategy">Generate Strategy</string>
+    <string name="voice_recording_hint">Listening… Tap mic again to transcribe</string>
+    <string name="voice_transcribing">Transcribing audio…</string>
+    <string name="mic_permission_rationale">Microphone access is needed to transcribe your spoken clip prompt.</string>
+</resources>

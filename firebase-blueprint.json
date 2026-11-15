@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "ClipProject": {
+      "title": "ClipProject",
+      "description": "A user's YouTube or authorized local video clipping project with AI-discovered Shorts suggestions and strategy notes.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID."
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["youtube", "local"],
+          "description": "Whether the project references public YouTube metadata or an authorized local video file."
+        },
+        "videoId": {
+          "type": "string",
+          "description": "11-character YouTube video ID or local identifier."
+        },
+        "sourceUrl": {
+          "type": "string",
+          "description": "Normalized YouTube URL or local file display identifier."
+        },
+        "title": {
+          "type": "string",
+          "description": "Video or project title."
+        },
+        "channelName": {
+          "type": "string",
+          "description": "Creator channel name or Local Studio."
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "Public YouTube thumbnail URL or empty for local videos."
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Duration of source video in seconds."
+        },
+        "aspectRatio": {
+          "type": "string",
+          "enum": ["9:16", "16:9", "1:1"],
+          "description": "Target export aspect ratio."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["preview", "analyzed", "clipped"],
+          "description": "Current workflow state of the project."
+        },
+        "strategyNotes": {
+          "type": "string",
+          "description": "High-thinking Gemini 4 Carbon strategy insights."
+        },
+        "clips": {
+          "type": "array",
+          "description": "Bounded list (max 10) of AI-discovered Short clip segments."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp updated via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "sourceType",
+        "videoId",
+        "sourceUrl",
+        "title",
+        "channelName",
+        "thumbnailUrl",
+        "durationSeconds",
+        "aspectRatio",
+        "status",
+        "strategyNotes",
+        "clips",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/ClipProject"
+      },
+      "description": "User-owned Clipper projects storing metadata, AI clip suggestions, and viral strategy notes."
+    }
+  }
+}
