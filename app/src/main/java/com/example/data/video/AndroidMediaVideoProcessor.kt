@@ -8,7 +8,9 @@ import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.media.MediaMuxer
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
+import androidx.core.graphics.scale
 import com.example.domain.video.ClipExportResult
 import com.example.domain.video.LocalVideoInfo
 import com.example.domain.video.VideoProcessor
@@ -166,8 +168,17 @@ class AndroidMediaVideoProcessor(
                     bufferInfo.offset = 0
                     bufferInfo.size = sampleSize
                     bufferInfo.presentationTimeUs = sampleTimeUs
-                    @Suppress("DEPRECATION")
-                    bufferInfo.flags = extractor.sampleFlags
+                    val sampleFlags = extractor.sampleFlags
+                    var codecFlags = 0
+                    if ((sampleFlags and MediaExtractor.SAMPLE_FLAG_SYNC) != 0) {
+                        codecFlags = codecFlags or MediaCodec.BUFFER_FLAG_KEY_FRAME
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                        (sampleFlags and MediaExtractor.SAMPLE_FLAG_PARTIAL_FRAME) != 0
+                    ) {
+                        codecFlags = codecFlags or MediaCodec.BUFFER_FLAG_PARTIAL_FRAME
+                    }
+                    bufferInfo.flags = codecFlags
                     muxer.writeSampleData(dstTrackIndex, buffer, bufferInfo)
 
                     if (sampleTimeUs >= startUs) {
@@ -220,7 +231,7 @@ class AndroidMediaVideoProcessor(
         val scale = maxDim.toFloat() / maxOf(width, height).toFloat()
         val newW = (width * scale).toInt().coerceAtLeast(1)
         val newH = (height * scale).toInt().coerceAtLeast(1)
-        val scaled = Bitmap.createScaledBitmap(source, newW, newH, true)
+        val scaled = source.scale(newW, newH)
         if (scaled != source) source.recycle()
         return scaled
     }

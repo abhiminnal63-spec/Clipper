@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Locale
 
 sealed interface ProjectsUiState {
     data object Loading : ProjectsUiState
@@ -511,9 +512,9 @@ class ClipperViewModel(
         val mins = (seconds % 3600L) / 60L
         val secs = seconds % 60L
         return if (hrs > 0L) {
-            String.format("%d:%02d:%02d", hrs, mins, secs)
+            String.format(Locale.US, "%d:%02d:%02d", hrs, mins, secs)
         } else {
-            String.format("%d:%02d", mins, secs)
+            String.format(Locale.US, "%d:%02d", mins, secs)
         }
     }
 

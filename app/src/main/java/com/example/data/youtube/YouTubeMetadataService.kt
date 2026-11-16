@@ -65,8 +65,8 @@ data class YouTubeStatistics(
 @JsonClass(generateAdapter = true)
 data class YouTubeOEmbedResponse(
     val title: String = "",
-    @Json(name = "author_name") val authorName: String = "",
-    @Json(name = "thumbnail_url") val thumbnailUrl: String = ""
+    @param:Json(name = "author_name") val authorName: String = "",
+    @param:Json(name = "thumbnail_url") val thumbnailUrl: String = ""
 )
 
 interface YouTubeDataApi {
